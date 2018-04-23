@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Film_Webshop.Context.MSSQL;
+using Film_Webshop.Models;
 
 namespace Film_Webshop.Repository
 {
@@ -12,9 +13,9 @@ namespace Film_Webshop.Repository
             this._winkelmandContext = winkelmandContext;
         }
 
-        public List<int> GetFilmsIdsInWinkelmand(int winkelmandId)
+        public List<Film> GetFilmsInWinkelmand(int winkelmandId)
         {
-            return _winkelmandContext.SelectAll(winkelmandId);
+            return _winkelmandContext.GetFilmsInWinkelmand(winkelmandId);
         }
 
         public void AddFilmWithId(int winkelmandId, int filmId)
@@ -30,6 +31,16 @@ namespace Film_Webshop.Repository
         public int GetWinkelmandId(int accId)
         {
             return _winkelmandContext.GetWinkelmandId(accId);
+        }
+
+        public int GetPrijs(List<Film> filmList)
+        {
+            int totaalPrijs = 0;
+            foreach (Film f in filmList)
+            {
+                totaalPrijs += f.Prijs;
+            }
+            return totaalPrijs;
         }
     }
 }

@@ -23,12 +23,11 @@
                 @Html.ActionLink("Film Webshop", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                @if (userCookie != null && userCookie.Value != null)
+                @if (userCookie?.Value != null)
                 {
                     <ul class="nav navbar-nav">
                         <li>@Html.ActionLink("Home", "Index", "Home")</li>
                         <li>@Html.ActionLink("About", "About", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                         <li>@Html.ActionLink("Films", "Index", "Film")</li>
                         <li>@Html.ActionLink("Winkelmand", "Index", "Winkelmand")</li>
                         <li>@Html.ActionLink("Mijn Films", "Films", "Account")</li>
@@ -41,7 +40,6 @@
                     <ul class="nav navbar-nav">
                         <li>@Html.ActionLink("Home", "Index", "Home")</li>
                         <li>@Html.ActionLink("About", "About", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                         <li>@Html.ActionLink("Login", "Login", "Account")</li>
                         <li>@Html.ActionLink("Register", "Register", "Account")</li>
                     </ul>

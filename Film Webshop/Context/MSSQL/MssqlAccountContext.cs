@@ -41,6 +41,7 @@ namespace Film_Webshop.Context.MSSQL
                     Account acc = new Account(id, credits, email, wachtwoord, admin);
                     accounts.Add(acc);
                 }
+
                 conn.Close();
                 return accounts;
             }
@@ -58,39 +59,6 @@ namespace Film_Webshop.Context.MSSQL
                 cmd.Parameters.AddWithValue("@id", account.Id);
                 cmd.ExecuteNonQuery();
                 conn.Close();
-            }
-        }
-
-        public void BuyFilm(Film f, int accId)
-        {
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                conn.Open();
-                string query = "INSERT INTO dbo.AccountFilm (Account_ID, Film_ID) VALUES (@Account_ID, @Film_ID)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@Account_ID", accId);
-                cmd.Parameters.AddWithValue("@Film_ID", f.Id);
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-        }
-
-        public List<int> GetBoughtFilmIds(int accId)
-        {
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                conn.Open();
-                string query = "SELECT * FROM dbo.AccountFilm WHERE Account_ID = @Account_ID";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@Account_ID", accId);
-                SqlDataReader reader = cmd.ExecuteReader();
-                List<int> filmIdList = new List<int>();
-                while (reader.Read())
-                {
-                    filmIdList.Add(reader.GetInt32(reader.GetOrdinal("Film_ID")));
-                }
-                conn.Close();
-                return filmIdList;
             }
         }
     }

@@ -8,7 +8,5 @@ namespace Film_Webshop.Context
         void Insert(Account account);
         List<Account> SelectAll();
         void Update(Account account, int credits);
-        void BuyFilm(Film film, int accId);
-        List<int> GetBoughtFilmIds(int accId);
     }
 }

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using Film_Webshop.Context;
 using Film_Webshop.Context.MSSQL;
 using Film_Webshop.Helpers;
 using Film_Webshop.Models;
 using Film_Webshop.Repository;
 using Film_Webshop.Viewmodels;
-using Microsoft.Ajax.Utilities;
 
 namespace Film_Webshop.Controllers
 {
@@ -25,15 +20,10 @@ namespace Film_Webshop.Controllers
         public ActionResult Index()
         {
             int accId = _auth.Decrypt();
-            List<Film> listFilms = new List<Film>();
-            foreach (int filmId in _winkelmandRepository.GetFilmsIdsInWinkelmand(
-                _winkelmandRepository.GetWinkelmandId(accId)))
-            {
-                listFilms.Add(_filmRepository.GetById(filmId));
-            }
+            List<Film> listFilms = _winkelmandRepository.GetFilmsInWinkelmand(_winkelmandRepository.GetWinkelmandId(accId));
             AccountWinkelmandGenreViewmodel viewmodel = new AccountWinkelmandGenreViewmodel
             {
-                Winkelmand = new Winkelmand(listFilms, _filmRepository.GetPrijs(listFilms)),
+                Winkelmand = new Winkelmand(listFilms, _winkelmandRepository.GetPrijs(listFilms)),
                 Genres = _genreRepository.GetAllGenres(),
                 Account = _accountRepository.GetAccountById(accId)
             };
@@ -61,28 +51,15 @@ namespace Film_Webshop.Controllers
         {
             viewmodel.Account = _accountRepository.GetAccountById(viewmodel.Account.Id);
             viewmodel.Winkelmand.Id = _winkelmandRepository.GetWinkelmandId(viewmodel.Account.Id);
-            List<int> filmIds = _winkelmandRepository.GetFilmsIdsInWinkelmand(viewmodel.Winkelmand.Id);
-            List<Film> films = new List<Film>();
-            foreach (int id in filmIds)
-            {
-                films.Add(_filmRepository.GetById(id));
-            }
-            int totaalprijs = 0;
-            foreach (Film f in films)
-            {
-                totaalprijs += f.Prijs;
-            }
+            List<Film> films = _winkelmandRepository.GetFilmsInWinkelmand(viewmodel.Account.Id);
+            int totaalprijs = _winkelmandRepository.GetPrijs(films);
             viewmodel.Winkelmand.Films = films;
             viewmodel.Winkelmand.Totaalprijs = totaalprijs;
             if (viewmodel.Account.Credits >= viewmodel.Winkelmand.Totaalprijs)
             {
                 foreach (Film f in viewmodel.Winkelmand.Films)
                 {
-                    if (!_accountRepository.HasFilm(viewmodel.Account.Id, f))
-                    {
-                        _accountRepository.BuyFilm(viewmodel.Account, f);
-                        _winkelmandRepository.RemoveFilmWithId(viewmodel.Winkelmand.Id, f.Id);
-                    }
+                        _filmRepository.BuyFilm(viewmodel.Account, f);
                 }
                 return RedirectToAction("Films","Account");
             }

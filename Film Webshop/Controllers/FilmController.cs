@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Film_Webshop.Context.MSSQL;
 using Film_Webshop.Helpers;
@@ -26,12 +27,7 @@ namespace Film_Webshop.Controllers
             List<Film> films = new List<Film>();
             Account acc = _accountRepository.GetAccountById(auth.Decrypt());
             acc.Winkelmand = new Winkelmand();
-            List<int> winkelmandFilmIds = _winkelmandRepository.GetFilmsIdsInWinkelmand(_winkelmandRepository.GetWinkelmandId(acc.Id));
-            foreach (int filmId in winkelmandFilmIds)
-            {
-                films.Add(_filmRepository.GetById(filmId));
-            }
-            acc.Winkelmand.Films = films;
+            acc.Winkelmand.Films = _winkelmandRepository.GetFilmsInWinkelmand(_winkelmandRepository.GetWinkelmandId(acc.Id)); ;
             FilmIndexViewmodel viewmodel = new FilmIndexViewmodel
             {
                 ListFilm = _filmRepository.GetAllFilms(),
@@ -45,16 +41,10 @@ namespace Film_Webshop.Controllers
         public ActionResult Index(string gekozenGenre)
         {
             TicketAuthenticator auth = new TicketAuthenticator();
-            List<Film> films = new List<Film>();
             Account acc = _accountRepository.GetAccountById(auth.Decrypt());
-            List<int> winkelmandFilmIds = _winkelmandRepository.GetFilmsIdsInWinkelmand(_winkelmandRepository.GetWinkelmandId(acc.Id));
-            foreach (int filmId in winkelmandFilmIds)
-            {
-                films.Add(_filmRepository.GetById(filmId));
-            }
             acc.Winkelmand = new Winkelmand
             {
-                Films = films
+                Films = _winkelmandRepository.GetFilmsInWinkelmand(_winkelmandRepository.GetWinkelmandId(acc.Id))
             };
             FilmIndexViewmodel viewmodel = new FilmIndexViewmodel
             {
@@ -118,13 +108,9 @@ namespace Film_Webshop.Controllers
                 ViewBag.rating = "Let op! Gebruik een punt en geen komma.";
                 return View(viewmodel);
             }
-            byte[] bytes;
-            using (BinaryReader br = new BinaryReader(postedFile.InputStream))
-            {
-                bytes = br.ReadBytes(postedFile.ContentLength);
-                br.Close();
-            }
-            viewmodel.Film.Image = bytes;
+            WebImage img = new WebImage(postedFile.InputStream);
+            img.Resize(124, 186, false);
+            viewmodel.Film.Image = img.GetBytes();
             if (_filmRepository.GetAllFilms().Contains(viewmodel.Film))
             {
                 return View();
@@ -171,18 +157,13 @@ namespace Film_Webshop.Controllers
                 ViewBag.rating = "Let op! Gebruik een punt en geen komma.";
                 return View(viewmodel);
             }
-            byte[] bytes;
-            using (BinaryReader br = new BinaryReader(postedFile.InputStream))
-            {
-                bytes = br.ReadBytes(postedFile.ContentLength);
-                br.Close();
-            }
-            viewmodel.Film.Image = bytes;
+            WebImage img = new WebImage(postedFile.InputStream);
+            img.Resize(124, 186, false);
+            viewmodel.Film.Image = img.GetBytes();
             if (_filmRepository.GetAllFilms().Contains(viewmodel.Film))
             {
                 return View();
             }
-            viewmodel.Film.Id = _filmRepository.GetAllFilms().Single(x => x.Beschrijving == viewmodel.Film.Beschrijving).Id;
             _filmRepository.EditFilm(viewmodel.Film);
             _genreRepository.DeleteFilmGenres(viewmodel.Film);
             _genreRepository.InsertFilmGenres(viewmodel.Film);

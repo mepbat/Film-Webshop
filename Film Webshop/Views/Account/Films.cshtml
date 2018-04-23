@@ -1,11 +1,12 @@
 ﻿@using Film_Webshop.Viewmodels
 @using Microsoft.Ajax.Utilities
-@model AccountWinkelmandGenreViewmodel
+@model AccountFilmsViewmodel
 @Styles.Render("~/Content/Site.css")
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/Scripts/Filter.js")
 
 @{
+
     List<SelectListItem> filmList = new List<SelectListItem>();
     foreach (var item in Model.Genres)
     {
@@ -16,10 +17,11 @@
         });
     }
     filmList = filmList.DistinctBy(x => x.Text).ToList();
+    filmList = filmList.OrderBy(x => x.Text).ToList();
 }
 <!DOCTYPE html>
 
-<h2>Uw films</h2>
+<h2>Uw Films</h2>
 <br />
 <input class="form-control" id="myInput" type="text" placeholder="Search here" />
 <br />
@@ -32,17 +34,17 @@
     </div>
     <table class="table" style="width: 33%; float:left">
         <tbody id="myTable">
-            @for (int i = 0; i < Model.Winkelmand.Films.Count; i += 3)
+            @for (int i = 0; i < Model.Account.Films.Count; i += 3)
             {
                 <tr>
                     <td style="width: 1%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Winkelmand.Films[i].Image, 0, Model.Winkelmand.Films[i].Image.Length)" />
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Account.Films[i].Image, 0, Model.Account.Films[i].Image.Length)" />
                         </a>
                     </td>
                     <td style="width: 10%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            @Html.DisplayFor(model => model.Winkelmand.Films[i].Naam) (@Html.DisplayFor(model => model.Winkelmand.Films[i].Jaar)) &nbsp;
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            @Html.DisplayFor(model => model.Account.Films[i].Naam) (@Html.DisplayFor(model => model.Account.Films[i].Jaar)) &nbsp;
                         </a>
                     </td>
                 </tr>
@@ -51,17 +53,17 @@
     </table>
     <table class="table" style="width: 33%; float:left">
         <tbody id="myTable">
-            @for (int i = 1; i < Model.Winkelmand.Films.Count; i += 3)
+            @for (int i = 1; i < Model.Account.Films.Count; i += 3)
             {
                 <tr>
                     <td style="width: 1%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Winkelmand.Films[i].Image, 0, Model.Winkelmand.Films[i].Image.Length)" />
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Account.Films[i].Image, 0, Model.Account.Films[i].Image.Length)" />
                         </a>
                     </td>
                     <td style="width: 10%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            @Html.DisplayFor(model => model.Winkelmand.Films[i].Naam) (@Html.DisplayFor(model => model.Winkelmand.Films[i].Jaar)) &nbsp;
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            @Html.DisplayFor(model => model.Account.Films[i].Naam) (@Html.DisplayFor(model => model.Account.Films[i].Jaar)) &nbsp;
                         </a>
                     </td>
                 </tr>
@@ -70,17 +72,17 @@
     </table>
     <table class="table" style="width: 33%; float:left">
         <tbody id="myTable">
-            @for (int i = 2; i < Model.Winkelmand.Films.Count; i += 3)
+            @for (int i = 2; i < Model.Account.Films.Count; i += 3)
             {
                 <tr>
                     <td style="width: 1%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Winkelmand.Films[i].Image, 0, Model.Winkelmand.Films[i].Image.Length)" />
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            <img src="data:image/png;base64, @Convert.ToBase64String(Model.Account.Films[i].Image, 0, Model.Account.Films[i].Image.Length)" />
                         </a>
                     </td>
                     <td style="width: 10%">
-                        <a href="@Url.Action("Details","Film", new { id = Model.Winkelmand.Films[i].Id })">
-                            @Html.DisplayFor(model => model.Winkelmand.Films[i].Naam) (@Html.DisplayFor(model => model.Winkelmand.Films[i].Jaar)) &nbsp;
+                        <a href="@Url.Action("Details","Film", new { id = Model.Account.Films[i].Id })">
+                            @Html.DisplayFor(model => model.Account.Films[i].Naam) (@Html.DisplayFor(model => model.Account.Films[i].Jaar)) &nbsp;
                         </a>
                     </td>
                 </tr>

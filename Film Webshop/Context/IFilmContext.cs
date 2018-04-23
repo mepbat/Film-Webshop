@@ -10,5 +10,7 @@ namespace Film_Webshop.Context
         void Delete(Film film);
         Film GetById(int id);
         void Update(Film film);
+        void BuyFilm(int filmId, int accId, int credits);
+        List<Film> GetBoughtFilms(int accountId);
     }
 }

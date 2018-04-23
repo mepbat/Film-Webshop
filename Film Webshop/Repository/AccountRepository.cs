@@ -112,22 +112,5 @@ namespace Film_Webshop.Repository
         {
             _accountContext.Update(acc, credits);
         }
-
-        public bool HasFilm(int accId, Film f)
-        {
-            return _accountContext.GetBoughtFilmIds(accId).Contains(f.Id);
-        }
-
-        public void BuyFilm(Account acc, Film f)
-        {
-            int credits = f.Prijs * -1;
-            _accountContext.Update(acc, credits);
-            _accountContext.BuyFilm(f, acc.Id);
-        }
-
-        public List<int> GetBoughtFilmIds(int accId)
-        {
-            return _accountContext.GetBoughtFilmIds(accId);
-        }
     }
 }

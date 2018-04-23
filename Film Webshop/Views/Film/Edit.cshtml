@@ -9,7 +9,7 @@
 @using (Html.BeginForm("Edit", "Film", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-    <h4>Voeg een nieuwe film toe.</h4>
+    <h4>@Html.DisplayFor(m => m.Film.Naam, new { @class = "form-control" })</h4>
     @ViewBag.image
     @ViewBag.gegevens
     <div class="form-group">
@@ -27,7 +27,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Film.Beschrijving, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.DisplayFor(m => m.Film.Beschrijving, new { @class = "form-control" })
+            @Html.TextAreaFor(m => m.Film.Beschrijving, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">
@@ -60,7 +60,7 @@
         <div class="form-group">
             @Html.Label(g.Naam.Trim(), new { @class = "col-md-2 control-label" })
             <div class="col-md-10">
-                @Html.CheckBox(g.Naam.Trim())
+                @Html.CheckBox(g.Naam.Trim(), g.Checked)
             </div>
         </div>
     }
@@ -69,5 +69,5 @@
             <input type="submit" class="btn btn-default" value="Voeg Toe" />
         </div>
     </div>
-    @Html.HiddenFor(m => m.Film.Beschrijving)
+    @Html.HiddenFor(m => m.Film.Id)
 }

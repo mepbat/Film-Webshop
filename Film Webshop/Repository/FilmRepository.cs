@@ -14,16 +14,6 @@ namespace Film_Webshop.Repository
             _filmContext = filmContext;
         }
 
-        public int GetPrijs(List<Film> filmList)
-        {
-            int totaalPrijs = 0;
-            foreach (Film f in filmList)
-            {
-                totaalPrijs += f.Prijs;
-            }
-            return totaalPrijs;
-        }
-
         public List<Film> GetAllFilms()
         {
             return _filmContext.Select();
@@ -109,6 +99,16 @@ namespace Film_Webshop.Repository
         public void EditFilm(Film film)
         {
             _filmContext.Update(film);
+        }
+
+        public void BuyFilm(Account acc, Film f)
+        {
+            _filmContext.BuyFilm(f.Id, acc.Id, f.Prijs);
+        }
+
+        public List<Film> GetBoughtFilms(int accId)
+        {
+            return _filmContext.GetBoughtFilms(accId);
         }
     }
 }

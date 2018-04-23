@@ -1,28 +1,46 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using Film_Webshop.Models;
+using Film_Webshop.Repository;
 
 namespace Film_Webshop.Context.MSSQL
 {
     public class MssqlWinkelmandContext : Database.Database, IWinkelmandContext
     {
-        public List<int> SelectAll(int winkelmandId)
+        public List<Film> GetFilmsInWinkelmand(int winkelmandId)
         {
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
+                GenreRepository genreRepository = new GenreRepository(new MssqlGenreContext());
                 conn.Open();
-                string query = "SELECT * FROM dbo.WinkelmandFilm WHERE Winkelmand_ID = @winkelmandId";
+                string query = "SELECT * FROM dbo.WinkelmandFilm INNER JOIN dbo.Film ON dbo.WinkelmandFilm.Film_ID = dbo.Film.ID WHERE Winkelmand_ID = @winkelmandId";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@winkelmandId", winkelmandId);
                 SqlDataReader reader = cmd.ExecuteReader();
-                List<int> listFilmIds = new List<int>();
+                List<Film> listFilm = new List<Film>();
                 while (reader.Read())
                 {
-                    listFilmIds.Add(reader.GetInt32(reader.GetOrdinal("Film_ID")));
+                    int id = reader.GetInt32(reader.GetOrdinal("Film_ID"));
+                    string naam = reader.GetString(reader.GetOrdinal("naam"));
+                    string beschrijving = reader.GetString(reader.GetOrdinal("beschrijving"));
+                    int lengte = reader.GetInt32(reader.GetOrdinal("lengte"));
+                    int prijs = reader.GetInt32(reader.GetOrdinal("prijs"));
+                    double rating = (double)reader.GetDecimal(reader.GetOrdinal("rating"));
+                    byte[] image;
+                    Stream s = reader.GetStream(reader.GetOrdinal("Image"));
+                    using (BinaryReader br = new BinaryReader(s))
+                    {
+                        image = br.ReadBytes((int)s.Length);
+                    }
+                    int jaar = reader.GetInt32(reader.GetOrdinal("jaar"));
+                    List<Genre> filmgenres = genreRepository.GetFilmGenres(id);
+                    Film f = new Film(id, naam, beschrijving, filmgenres, lengte, prijs, rating, image, jaar);
+                    listFilm.Add(f);
                 }
                 conn.Close();
-                return listFilmIds;
+                return listFilm;
             }
         }
 
@@ -70,23 +88,6 @@ namespace Film_Webshop.Context.MSSQL
                 cmd.Parameters.AddWithValue("@Film_ID", filmId);
                 cmd.ExecuteNonQuery();
                 conn.Close();
-            }
-        }
-
-
-        public void Kopen(int accountId, int filmId)
-        {
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
-            {
-                using (SqlCommand command =
-                    new SqlCommand("dbo.spFilmsKopen", conn) { CommandType = CommandType.StoredProcedure })
-                {
-                    command.Parameters.Add(new SqlParameter("@accountID", accountId));
-                    command.Parameters.Add(new SqlParameter("@filmID", filmId));
-                    conn.Open();
-                    command.ExecuteNonQuery();
-                    conn.Close();
-                }
             }
         }
     }

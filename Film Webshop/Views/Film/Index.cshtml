@@ -24,12 +24,20 @@
 <br />
 <input class="form-control" id="myInput" type="text" placeholder="Search here" />
 <br />
+@using (Html.BeginForm("Toevoegen","Film",FormMethod.Get))
+{
+    if (Model.Account.Admin)
+    {
+        <button type="submit">Film Toevoegen</button>
+    }
+}
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     <div class="form-group dropdown">
+        <br />
         @Html.DropDownList("gekozenGenre", filmList)
-        <input type="submit" value="Filter" />
+        <input type="submit" value="Filter"/>
     </div>
     <table class="table" style="width: 33%; float:left">
         <tbody id="myTable">

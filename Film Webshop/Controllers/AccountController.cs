@@ -112,16 +112,12 @@ namespace Film_Webshop.Controllers
         {
             TicketAuthenticator auth = new TicketAuthenticator();
             int accId = auth.Decrypt();
-            List<Film> listFilms = new List<Film>();
-            foreach (int filmId in _accountRepository.GetBoughtFilmIds(accId))
+            Account acc = _accountRepository.GetAccountById(accId);
+            acc.Films = _filmRepository.GetBoughtFilms(accId);
+            AccountFilmsViewmodel viewmodel = new AccountFilmsViewmodel
             {
-                listFilms.Add(_filmRepository.GetById(filmId));
-            }
-            AccountWinkelmandGenreViewmodel viewmodel = new AccountWinkelmandGenreViewmodel
-            {
-                Winkelmand = new Winkelmand(listFilms, _filmRepository.GetPrijs(listFilms)),
                 Genres = _genreRepository.GetAllGenres(),
-                Account = _accountRepository.GetAccountById(accId)
+                Account = acc
             };
             return View(viewmodel);
         }

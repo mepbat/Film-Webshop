@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using Film_Webshop.Models;
@@ -123,6 +124,58 @@ namespace Film_Webshop.Context.MSSQL
                 cmd.Parameters.AddWithValue("@ID", film.Id);
                 cmd.ExecuteNonQuery();
                 conn.Close();
+            }
+        }
+
+        public void BuyFilm(int filmId, int accId, int credits)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand command =
+                    new SqlCommand("spFilmsKopen", conn) { CommandType = CommandType.StoredProcedure })
+                {
+                    conn.Open();
+                    command.Parameters.AddWithValue("@AccountID", accId);
+                    command.Parameters.AddWithValue("@FilmID", filmId);
+                    command.Parameters.AddWithValue("@Credits", credits);
+                    command.ExecuteNonQuery();
+                    conn.Close();
+                }
+            }
+        }
+
+        public List<Film> GetBoughtFilms(int accId)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                GenreRepository genreRepository = new GenreRepository(new MssqlGenreContext());
+                conn.Open();
+                string query = "SELECT * FROM dbo.AccountFilm INNER JOIN dbo.Film ON dbo.AccountFilm.Film_ID = dbo.Film.ID WHERE Account_ID = @Account_ID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@Account_ID", accId);
+                SqlDataReader reader = cmd.ExecuteReader();
+                List<Film> filmList = new List<Film>();
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32(reader.GetOrdinal("Film_ID"));
+                    string naam = reader.GetString(reader.GetOrdinal("naam"));
+                    string beschrijving = reader.GetString(reader.GetOrdinal("beschrijving"));
+                    int lengte = reader.GetInt32(reader.GetOrdinal("lengte"));
+                    int prijs = reader.GetInt32(reader.GetOrdinal("prijs"));
+                    double rating = (double)reader.GetDecimal(reader.GetOrdinal("rating"));
+                    byte[] image;
+                    Stream s = reader.GetStream(reader.GetOrdinal("Image"));
+                    using (BinaryReader br = new BinaryReader(s))
+                    {
+                        image = br.ReadBytes((int)s.Length);
+                    }
+                    int jaar = reader.GetInt32(reader.GetOrdinal("jaar"));
+                    List<Genre> filmgenres = genreRepository.GetFilmGenres(id);
+                    Film f = new Film(id, naam, beschrijving, filmgenres, lengte, prijs, rating, image, jaar);
+                    filmList.Add(f);
+                }
+                conn.Close();
+                return filmList;
             }
         }
     }

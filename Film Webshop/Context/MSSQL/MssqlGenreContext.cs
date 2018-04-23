@@ -109,9 +109,9 @@ namespace Film_Webshop.Context.MSSQL
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 conn.Open();
-                string query = "DELETE * FROM dbo.FilmGenre WHERE ID = @ID";
+                string query = "DELETE FROM dbo.FilmGenre WHERE Film_ID = @filmID";
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@ID", film.Id);
+                cmd.Parameters.AddWithValue("@filmID", film.Id);
                 cmd.ExecuteNonQuery();
                 conn.Close();
             }
